@@ -8,7 +8,7 @@ MONGO_PORT = 27017
 MONGO_NAME = 'climateData'
 COLLECTION_MONTHLY = 'monthlyData'
 
-stationID = "889"
+stationID = raw_input("Enter Station ID...")
 
 client = MongoClient(MONGO_CONNECTION, MONGO_PORT)
 db = client[MONGO_NAME]
