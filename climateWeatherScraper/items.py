@@ -29,8 +29,3 @@ class DailyDataItem(scrapy.Item):
 	snowOnGround = scrapy.Field()
 	dirOfGust = scrapy.Field()
 	speedOfMaxGust = scrapy.Field() 
-
-class dateRangeItem(scrapy.Item):
-	recentYear = scrapy.Field()
-	recentMonth = scrapy.Field()
-	lastYear = scrapy.Field()

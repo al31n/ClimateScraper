@@ -13,5 +13,12 @@ BOT_NAME = 'climateWeatherScraper'
 SPIDER_MODULES = ['climateWeatherScraper.spiders']
 NEWSPIDER_MODULE = 'climateWeatherScraper.spiders'
 
+
+ITEM_PIPELINES = ['climateWeatherScraper.pipelines.MongoDBPipeline', ]
+
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = "climateData"
+MONGODB_COLLECTION = "monthlyData"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'climateWeatherScraper (+http://www.yourdomain.com)'

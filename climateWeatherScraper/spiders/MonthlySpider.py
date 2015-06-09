@@ -6,7 +6,6 @@ import time
 
 class MonthlySpider(Spider):
 	name = "ClimateWeatherMonthly"
-	# allowed_domains = ["http://climate.weather.gc.ca"]
 	
 	def __init__(self, stationID=None, *args, **kwargs):
 		super(MonthlySpider, self).__init__(*args, **kwargs)
@@ -115,7 +114,7 @@ class MonthlySpider(Spider):
 			dailyData["speedOfMaxGust"] = restOfRow[10]
 
 			# Appendn to list
-			dailyDataList.append(dailyData)
+			dailyDataList.append(dict(dailyData))
 
 		# Create Scraper Item
 		item = ClimateWeatherScraperItem()
@@ -125,7 +124,7 @@ class MonthlySpider(Spider):
 		item["stationID"] = self.stationID
 		item["dailyData"] = dailyDataList
 		
-		return item
+		yield item
 
 
 
