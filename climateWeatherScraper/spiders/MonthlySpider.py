@@ -19,9 +19,11 @@ class MonthlySpider(Spider):
 		"""
 		Obtain date range and parse data
 		"""
-		lastYear = response.xpath("//*[@id='Year1']/option[1]/@value").extract()[0]
 		recentYear = response.xpath("//*[@id='Year1']/option[last()]/@value").extract()[0]
 		recentMonth = response.xpath("//*[@id='Month2']/option[last()]/@value").extract()[0]
+		lastYear = response.xpath("//*[@id='Year1']/option[1]/@value").extract()[0]
+		lastMonth = response.xpath
+		
 
 		url_template = 'http://climate.weather.gc.ca/climateData/dailydata_e.html?timeframe=1&Prov=&StationID={stationID}&cmdB1=Go&Year={year}&Month={month}'
 		currentYear = int(recentYear)
@@ -91,12 +93,14 @@ class MonthlySpider(Spider):
 		dataTableRows = response.xpath("//div[@id='dynamicDataTable']/table/tbody/tr[position()>1]")
 		for row in dataTableRows:
 			dailyData = DailyDataItem()
-
 			# Extract date
 			dateString = row.xpath("td/abbr/@title").extract()
+			if "Sum" in dateString:
+				break
 			if len(dateString) == 0:
-				break;
-			dailyData["dateEntry"] = datetime.datetime.strptime(str(dateString[0]), "%B %d, %Y")
+				continue
+			else:
+				dailyData["dateEntry"] = datetime.datetime.strptime(str(dateString[0]), "%B %d, %Y")
 
 			# Get rest of data in row
 			restOfRow = row.xpath("td[position()>1]/text()|td[position()>1]/a/text()").extract()
@@ -113,18 +117,28 @@ class MonthlySpider(Spider):
 			dailyData["dirOfGust"] = restOfRow[9]
 			dailyData["speedOfMaxGust"] = restOfRow[10]
 
-			# Appendn to list
+			# Append to list
 			dailyDataList.append(dict(dailyData))
 
 		# Create Scraper Item
-		item = ClimateWeatherScraperItem()
-		item["metadata"] = metadata
-		item["month"] = dailyDataList[0]["dateEntry"].strftime("%m")
-		item["year"] = dailyDataList[0]["dateEntry"].strftime("%Y")
-		item["stationID"] = self.stationID
-		item["dailyData"] = dailyDataList
-		
-		yield item
+		monthFromList = dailyDataList[0]["dateEntry"].strftime("%m")
+		yearFromList = dailyDataList[0]["dateEntry"].strftime("%Y")
+		thisMonth = response.request.url.split("&")[-1].split("=")[1]
+		thisYear = response.request.url.split("&")[-2].split("=")[1]
+
+		if len(thisMonth) == 1:
+			thisMonth = "0%s" % thisMonth
+
+		if len(dailyDataList) > 0 and thisMonth == monthFromList and thisYear == yearFromList:
+			item = ClimateWeatherScraperItem()
+			item["metadata"] = metadata
+			item["month"] = thisMonth
+			item["year"] = thisYear
+			item["stationID"] = self.stationID
+			item["dailyData"] = dailyDataList
+			yield item
+		else:
+			log.msg("%s, %s, %s, %s not match" %(thisMonth, monthFromList, thisYear, yearFromList), level=log.DEBUG)
 
 
 
