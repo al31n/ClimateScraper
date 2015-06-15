@@ -7,7 +7,6 @@ from climateWeatherScraper.spiders.MonthlySpider import MonthlySpider
 from scrapy.utils.project import get_project_settings
 import sys
 import os
-import datetime
 
 LOG_DIR = "log"
 
@@ -25,4 +24,5 @@ if len(sys.argv) == 2:
 	log.start(logfile="%s/%s.log" % (LOG_DIR, stationID), loglevel=log.DEBUG)
 	reactor.run() # the script will block here until the spider_closed signal was sent
 else:
-	print "Incorrect stationID. Please insert correct stationID"
+	print "Invalid arguments: %s" % sys.argv
+	sys.exit()
